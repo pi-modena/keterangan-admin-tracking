@@ -2,7 +2,7 @@
 // Tempel Web app URL dari Google Apps Script di antara tanda kutip di bawah.
 // Contoh: "https://script.google.com/macros/s/AKfycb.../exec"
 window.AT_CONFIG = {
-  scriptUrl: "",
+     scriptUrl: "https://script.google.com/macros/s/AKfycbyGVZcc6KNV5ie6YEbcTlRG986G16MYM5vCZYp99WBe8clDw5Gri2rdUxlUhu2uklqq/exec",
 
   // Nama yang tampil di bilah atas halaman.
   judul: "Admin Tracking",
