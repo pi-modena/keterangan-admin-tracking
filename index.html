@@ -410,14 +410,14 @@ const CATS={
     format:"[Terhubung/Tidak Terhubung] / [WA/Call] / [In Warranty/Out Warranty] / [Setuju/Tidak Setuju/Belum Konfirmasi] / Estimasi Biaya Transport, Jasa, Sparepart, Tambahan (Total) / Follow Up PIC / Ket"},
   penjadwalan:{name:"Penjadwalan",
     situasi:["Part ready namun belum terjadwal","Part ready namun pending kembali (reschedule / TAO)"],
-    groups:[["Kontak pelanggan",[F.konek2,F.ch2]],["Tindak lanjut",[F.pic,F.alasan]]],
+    groups:[["Tindak lanjut",[F.pic,F.alasan]]],
     chips:[...CHIP_BASE,"Pelanggan minta reschedule","TAO","Menunggu konfirmasi jadwal dari pelanggan"],
-    format:"[Terhubung/Tidak Terhubung] / [WA/Call] / Follow Up PIC / Ket (alasan pending / keterangan tambahan)"},
+    format:"Follow Up PIC / Ket (alasan pending / keterangan tambahan)"},
   konfirmasi:{name:"Konfirmasi",
     situasi:["Kelengkapan dokumen garansi / invoice / serial number / info pendukung","Konfirmasi pending expired","Konfirmasi belum ada request sparepart","Advice / feedback related team (part tidak tersedia, ETA, substitusi, hasil pengecekan teknis, dll)"],
-    groups:[["Kontak pelanggan",[F.konek2,F.ch2]],["Tindak lanjut",[F.pic,F.alasan]]],
+    groups:[["Tindak lanjut",[F.pic,F.alasan]]],
     chips:[...CHIP_BASE,"Menunggu dokumen dari pelanggan","Menunggu info ETA sparepart","Menunggu feedback tim terkait"],
-    format:"[Terhubung/Tidak Terhubung] / [WA/Call] / Follow Up PIC / Ket (alasan pending / keterangan tambahan)"},
+    format:"Follow Up PIC / Ket (alasan pending / keterangan tambahan)"},
   ftu:{name:"Alternatif Solusi FTU",short:"FTU",prefix:"FTU",
     situasi:["Penawaran dan komunikasi alternatif solusi FTU / FTU depresiasi ke customer","Approval dan komunikasi internal FTU atas case customer"],
     groups:[["Follow up PIC",[F.pic]],["Kontak pelanggan / PIC",[F.konek3,F.ch4]],["Hasil follow up",[F.ftuCat,F.unit,F.tambahBiaya,F.setuju]],["Tindak lanjut",[F.ket]]],
@@ -749,10 +749,10 @@ function renderRekap(){
   const opt=(el,all,label)=>{const keep=el.value;el.innerHTML=`<option value="">${label}</option>`+[...new Set(all)].filter(Boolean).sort().map(a=>`<option>${esc(a)}</option>`).join("");el.value=keep};
   opt($("#fAdmin"),rekapRows.map(e=>e.nama),"Semua nama tracking");
   opt($("#fCabang"),rekapRows.map(e=>e.cabang),"Semua cabang");
-  const n=rows.length,kon=rows.filter(e=>e.konek==="Terhubung").length;
+  const n=rows.length,kon=rows.filter(e=>e.konek==="Terhubung").length,withKon=rows.filter(e=>e.konek).length;
   const ok=rows.filter(e=>pillFor(e.hasil)==="ok").length,wait=rows.filter(e=>pillFor(e.hasil)==="wait").length;
   const pct=x=>n?Math.round(x/n*100)+"%":"-";
-  $("#kpis").innerHTML=[["Total keterangan",n],["Pelanggan terhubung",pct(kon)],["Setuju",ok],["Belum konfirmasi",wait]]
+  $("#kpis").innerHTML=[["Total keterangan",n],["Pelanggan terhubung",withKon?Math.round(kon/withKon*100)+"%":"-"],["Setuju",ok],["Belum konfirmasi",wait]]
     .map(([l,v])=>`<div class="panel kpi"><span>${l}</span><b>${v}</b></div>`).join("");
   const byCat={},byRes={},byAd={},byCab={};
   rows.forEach(e=>{
