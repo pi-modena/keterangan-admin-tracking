@@ -220,6 +220,49 @@ td.k{font-family:var(--mono);font-size:.74rem;min-width:340px;color:var(--ink-2)
 .inline input{flex:1}
 .banner{padding:12px 14px;border-radius:8px;background:var(--warn-soft);color:var(--warn);font-size:.84rem;margin-bottom:16px;border:1px solid transparent}
 .pending{font-size:.78rem;color:var(--warn)}
+/* kalkulator */
+.side{position:static}
+.calc{padding:0;overflow:hidden}
+.calc-tabs{display:flex;border-bottom:1px solid var(--line)}
+.calc-tabs button{flex:1;border:0;background:transparent;padding:11px 8px;font-weight:600;font-size:.82rem;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.calc-tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.calc-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.calc-screen{background:var(--bar);color:var(--bar-ink);border-radius:8px;padding:10px 12px;text-align:right;font-family:var(--mono);min-height:68px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;outline:none}
+.calc-screen:focus-visible{box-shadow:0 0 0 3px var(--accent-soft)}
+.calc-expr{font-size:.8rem;color:var(--bar-muted);word-break:break-all;min-height:1.2em}
+.calc-res{font-size:1.45rem;font-weight:500;font-variant-numeric:tabular-nums;word-break:break-all;line-height:1.25}
+.calc-res.err{font-size:.9rem;color:#f2877d}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.keys button{min-height:40px;border-radius:6px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);font-family:var(--mono);font-size:.95rem;cursor:pointer}
+.keys button:hover{border-color:var(--line-2);background:var(--panel)}
+.keys button:active{transform:translateY(1px)}
+.keys .op{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:600}
+.keys .fn{color:var(--bad)}
+.keys .eq{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.calc-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.calc-actions select{flex:1;min-width:0;min-height:34px;padding:5px 8px;font-size:.8rem}
+.calc-actions .btn{min-height:34px;padding:5px 12px;font-size:.8rem}
+.calc-hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:120px;overflow:auto}
+.calc-hist li{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:.74rem;color:var(--muted);padding:4px 6px;border-radius:4px;cursor:pointer}
+.calc-hist li:hover{background:var(--panel-2);color:var(--ink)}
+.calc-hist li b{color:var(--ink);font-weight:500;white-space:nowrap}
+.mini{display:flex;flex-direction:column;gap:10px}
+.mini label{display:flex;flex-direction:column;gap:5px;font-size:.8rem;font-weight:600;color:var(--ink-2)}
+.mini .rp input,.mini .pct input{text-align:right;font-variant-numeric:tabular-nums}
+.pct{position:relative}
+.pct::after{content:"%";position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.84rem}
+.pct input{padding-right:30px}
+.mini-out{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.mini-out div{display:flex;justify-content:space-between;padding:8px 12px;font-size:.84rem;font-variant-numeric:tabular-nums;border-top:1px solid var(--line)}
+.mini-out div:first-child{border-top:0}
+.mini-out div span{color:var(--muted)}
+.mini-out div.main{background:var(--accent-soft)}
+.mini-out div.main b{color:var(--accent);font-size:1rem}
+.seg-sm{display:flex;border:1px solid var(--line-2);border-radius:6px;overflow:hidden;align-self:flex-start}
+.seg-sm button{border:0;background:var(--panel);padding:5px 12px;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer}
+.seg-sm button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.calc-note{font-size:.72rem;color:var(--muted);margin:0}
+
 .track{padding:16px 20px;margin-bottom:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) auto;gap:16px 20px;align-items:end}
 @media (max-width:760px){.track{grid-template-columns:1fr}}
 .track .note{font-size:.76rem;color:var(--muted);display:flex;align-items:center;gap:6px;padding-bottom:10px;white-space:nowrap}
@@ -282,6 +325,59 @@ td.k{font-family:var(--mono);font-size:.74rem;min-width:340px;color:var(--ink-2)
         <div class="panel cardpad">
           <p class="sub-h">Format baku</p>
           <p class="fmt" id="formatRef"></p>
+        </div>
+        <div class="panel calc" id="calc">
+          <div class="calc-tabs" role="tablist">
+            <button type="button" data-tab="std" aria-selected="true">Kalkulator</button>
+            <button type="button" data-tab="disc" aria-selected="false">Diskon</button>
+            <button type="button" data-tab="diff" aria-selected="false">Selisih</button>
+          </div>
+          <div class="calc-body" data-pane="std">
+            <div class="calc-screen" id="calcScreen" tabindex="0" aria-label="Layar kalkulator, bisa diketik dengan keyboard">
+              <div class="calc-expr" id="calcExpr"></div>
+              <div class="calc-res" id="calcRes">0</div>
+            </div>
+            <div class="keys" id="calcKeys">
+              <button type="button" data-k="C" class="fn">C</button>
+              <button type="button" data-k="(">(</button>
+              <button type="button" data-k=")">)</button>
+              <button type="button" data-k="BS" aria-label="Hapus satu">⌫</button>
+              <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button>
+              <button type="button" data-k="/" class="op" aria-label="Bagi">÷</button>
+              <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button>
+              <button type="button" data-k="*" class="op" aria-label="Kali">×</button>
+              <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button>
+              <button type="button" data-k="-" class="op" aria-label="Kurang">−</button>
+              <button type="button" data-k="000">000</button><button type="button" data-k="0">0</button><button type="button" data-k="." aria-label="Koma desimal">,</button>
+              <button type="button" data-k="+" class="op" aria-label="Tambah">+</button>
+              <button type="button" data-k="%" class="op">%</button>
+              <button type="button" data-k="=" class="eq" style="grid-column:span 3">=</button>
+            </div>
+            <div class="calc-actions" data-use="std"></div>
+            <ul class="calc-hist" id="calcHist"></ul>
+            <p class="calc-note">Bisa diketik dengan keyboard setelah layar diklik. Contoh: 500000 - 10% = 450.000.</p>
+          </div>
+          <div class="calc-body mini" data-pane="disc" hidden>
+            <label>Harga awal<span class="rp"><input type="text" inputmode="numeric" id="discBase" placeholder="0"></span></label>
+            <div class="seg-sm" role="group" aria-label="Jenis diskon"><button type="button" data-dmode="pct" aria-pressed="true">Persen</button><button type="button" data-dmode="rp" aria-pressed="false">Rupiah</button></div>
+            <label id="discPctWrap">Diskon<span class="pct"><input type="text" inputmode="decimal" id="discPct" placeholder="0"></span></label>
+            <label id="discRpWrap" hidden>Diskon<span class="rp"><input type="text" inputmode="numeric" id="discRp" placeholder="0"></span></label>
+            <div class="mini-out">
+              <div><span>Potongan</span><b id="discCut">Rp0</b></div>
+              <div><span>Persentase diskon</span><b id="discPctOut">0%</b></div>
+              <div class="main"><span>Harga setelah diskon</span><b id="discNet">Rp0</b></div>
+            </div>
+            <div class="calc-actions" data-use="disc"></div>
+          </div>
+          <div class="calc-body mini" data-pane="diff" hidden>
+            <label>Nilai A (contoh: harga unit baru)<span class="rp"><input type="text" inputmode="numeric" id="diffA" placeholder="0"></span></label>
+            <label>Nilai B (contoh: nilai unit lama / depresiasi)<span class="rp"><input type="text" inputmode="numeric" id="diffB" placeholder="0"></span></label>
+            <div class="mini-out">
+              <div><span>B terhadap A</span><b id="diffPct">0%</b></div>
+              <div class="main"><span>Selisih (A − B)</span><b id="diffOut">Rp0</b></div>
+            </div>
+            <div class="calc-actions" data-use="diff"></div>
+          </div>
         </div>
       </aside>
     </div>
@@ -780,6 +876,176 @@ $("#csvBtn").onclick=()=>{
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`rekap-keterangan-${dayKey(new Date())}.csv`;
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
 };
+
+/* ---------- kalkulator ---------- */
+(function(){
+  const calc=$("#calc");if(!calc)return;
+  const fmtNum=(n,max=2)=>Number(n).toLocaleString("id-ID",{maximumFractionDigits:max});
+  const OPS={"+":"+","-":"−","*":"×","/":"÷"};
+  let expr="",lastResult=null,justEvaluated=false;
+
+  // Parser aman (tanpa eval). Persen mengikuti kebiasaan kalkulator:
+  // 500000 - 10% = 450000 ; 500000 × 10% = 50000 ; 10% = 0,1
+  function evaluate(src){
+    const toks=src.match(/\d+(?:\.\d+)?|\.\d+|[()+\-*/%]/g)||[];
+    if(toks.join("")!==src.replace(/\s/g,""))throw new Error("Format salah");
+    let i=0;
+    const peek=()=>toks[i],next=()=>toks[i++];
+    function factor(){
+      let t=next();
+      if(t==="-"){const f=factor();return {v:-f.v,pct:f.pct}}
+      if(t==="+")return factor();
+      let v;
+      if(t==="("){v=expr0();if(next()!==")")throw new Error("Kurung belum ditutup")}
+      else if(t!==undefined&&/^[\d.]/.test(t))v=parseFloat(t);
+      else throw new Error("Format salah");
+      if(peek()==="%"){next();return {v,pct:true}}
+      return {v,pct:false};
+    }
+    function term(){
+      let a=factor(),v=a.pct?a.v/100:a.v,only=a.pct;
+      while(peek()==="*"||peek()==="/"){
+        const op=next(),b=factor(),bv=b.pct?b.v/100:b.v;only=false;
+        if(op==="/"){if(bv===0)throw new Error("Tidak bisa dibagi 0");v/=bv}else v*=bv;
+      }
+      return {v,pctRaw:only?a.v:null};
+    }
+    function expr0(){
+      let v=term().v;
+      while(peek()==="+"||peek()==="-"){
+        const op=next(),r=term();
+        const rv=r.pctRaw!==null?v*r.pctRaw/100:r.v;
+        v=op==="+"?v+rv:v-rv;
+      }
+      return v;
+    }
+    if(!toks.length)return 0;
+    const v=expr0();
+    if(i<toks.length)throw new Error("Format salah");
+    if(!isFinite(v))throw new Error("Hasil tidak valid");
+    return Math.round(v*1e6)/1e6;
+  }
+  const pretty=s=>s.replace(/\d+(?:\.\d*)?/g,m=>{
+    const [a,b]=m.split(".");const ai=Number(a).toLocaleString("id-ID");return b!==undefined?ai+","+b:ai;
+  }).replace(/[+\-*/]/g,o=>" "+OPS[o]+" ");
+  function render(){
+    $("#calcExpr").textContent=justEvaluated?pretty(lastExpr)+" =":pretty(expr);
+    const res=$("#calcRes");res.classList.remove("err");
+    if(justEvaluated){res.textContent=fmtNum(lastResult);return}
+    if(!expr){res.textContent="0";return}
+    try{const v=evaluate(expr.replace(/[+\-*/(]$/,""));res.textContent=fmtNum(v)}catch(e){res.textContent=pretty(expr)}
+  }
+  let lastExpr="";
+  function press(k){
+    if(k==="C"){expr="";justEvaluated=false;lastResult=null;return render()}
+    if(k==="BS"){if(justEvaluated){justEvaluated=false;expr=""}else expr=expr.slice(0,-1);return render()}
+    if(k==="="){
+      if(!expr)return;
+      try{
+        const v=evaluate(expr);lastExpr=expr;lastResult=v;justEvaluated=true;addHist(expr,v);render();
+      }catch(e){const r=$("#calcRes");r.textContent=e.message;r.classList.add("err")}
+      return;
+    }
+    if(justEvaluated){
+      expr=/[+\-*/%]/.test(k)?String(lastResult):"";justEvaluated=false;
+    }
+    if(/[+\-*/]/.test(k)&&/[+\-*/]$/.test(expr)){expr=expr.slice(0,-1)+k;return render()}
+    if(k==="."){const cur=(expr.match(/[\d.]*$/)||[""])[0];if(cur.includes("."))return;if(!cur)k="0.";}
+    if(k==="%"&&!/[\d)]$/.test(expr))return;
+    if(expr.length>80)return;
+    expr+=k;render();
+  }
+  $("#calcKeys").addEventListener("click",e=>{const b=e.target.closest("button");if(b){press(b.dataset.k);$("#calcScreen").focus({preventScroll:true})}});
+  $("#calcScreen").addEventListener("keydown",e=>{
+    const map={Enter:"=","=":"=",Backspace:"BS",Escape:"C",Delete:"C",",":".",".":".",x:"*",X:"*",":":"/"};
+    let k=map[e.key]||e.key;
+    if(/^[\d()+\-*/%]$/.test(k)||["=","BS","C","."].includes(k)){e.preventDefault();press(k)}
+  });
+  $("#calcScreen").addEventListener("paste",e=>{
+    const t=(e.clipboardData.getData("text")||"").replace(/[^\d,.\s+\-*/()%x×÷:]/gi,"");
+    if(!t)return;e.preventDefault();
+    // angka Indonesia: titik = ribuan, koma = desimal
+    const s=t.replace(/\s/g,"").replace(/[x×]/gi,"*").replace(/[÷:]/g,"/").replace(/\./g,"").replace(/,/g,".");
+    if(justEvaluated){expr="";justEvaluated=false}expr+=s;render();
+  });
+
+  // riwayat
+  const hist=[];
+  function addHist(e,v){
+    hist.unshift({e,v});hist.splice(6);
+    const ul=$("#calcHist");ul.innerHTML="";
+    hist.forEach(h=>{const li=document.createElement("li");li.title="Pakai hasil ini";
+      const s=document.createElement("span");s.textContent=pretty(h.e)+" =";const b=document.createElement("b");b.textContent=fmtNum(h.v);
+      li.append(s,b);li.onclick=()=>{expr=String(h.v);justEvaluated=false;render()};ul.appendChild(li)});
+  }
+
+  // tombol Salin & Isi ke biaya, untuk tiap mode
+  const getVal={
+    std:()=>justEvaluated?lastResult:(()=>{try{return expr?evaluate(expr):null}catch(e){return null}})(),
+    disc:()=>discCalc().net,
+    diff:()=>diffCalc().d
+  };
+  function buildActions(){
+    const fields=[...form.querySelectorAll("[data-money]")].map(el=>({el,label:el.closest("label").firstChild.textContent.trim()}));
+    calc.querySelectorAll(".calc-actions").forEach(box=>{
+      const mode=box.dataset.use;box.innerHTML="";
+      if(fields.length){
+        const sel=document.createElement("select");sel.setAttribute("aria-label","Pilih kolom biaya");
+        sel.innerHTML=fields.map((f,i)=>`<option value="${i}">Isi ke: ${esc(f.label)}</option>`).join("");
+        const go=document.createElement("button");go.type="button";go.className="btn primary";go.style.flex="none";go.textContent="Isi";
+        go.onclick=()=>{
+          const v=getVal[mode]();if(v==null||isNaN(v)){say("err","Belum ada hasil untuk diisikan.");return}
+          if(v<0){say("err","Hasil negatif tidak bisa diisikan ke biaya.");return}
+          const f=fields[Number(sel.value)];f.el.value=fmt(String(Math.round(v)));
+          f.el.dispatchEvent(new Event("input",{bubbles:true}));say("ok",`Hasil ${rupiah(Math.round(v))} diisikan ke ${f.label}.`);
+        };
+        box.append(sel,go);
+      }
+      const cp=document.createElement("button");cp.type="button";cp.className="btn secondary";cp.textContent="Salin hasil";
+      if(!fields.length)cp.style.flex="1";
+      cp.onclick=()=>{
+        const v=getVal[mode]();if(v==null||isNaN(v))return;
+        const txt=Number.isInteger(v)?String(v):String(v).replace(".",",");
+        try{navigator.clipboard.writeText(txt).then(()=>{cp.textContent="Tersalin";setTimeout(()=>cp.textContent="Salin hasil",1200)},()=>{})}catch(e){}
+      };
+      box.appendChild(cp);
+    });
+  }
+  // dipanggil ulang setiap kategori berganti
+  const _renderForm=renderForm;renderForm=function(){_renderForm();buildActions()};
+
+  // diskon
+  let dmode="pct";
+  const num=id=>Number(digits($("#"+id).value)||0);
+  const dec=id=>Number(($("#"+id).value||"").replace(/[^\d,.]/g,"").replace(",","."))||0;
+  function discCalc(){
+    const base=num("discBase");
+    let cut=dmode==="pct"?base*Math.min(dec("discPct"),100)/100:Math.min(num("discRp"),base);
+    cut=Math.round(cut);const net=base-cut;
+    return {base,cut,net,pct:base?cut/base*100:0};
+  }
+  function renderDisc(){const r=discCalc();$("#discCut").textContent=rupiah(r.cut);$("#discNet").textContent=rupiah(r.net);$("#discPctOut").textContent=fmtNum(r.pct)+"%"}
+  calc.querySelectorAll("[data-dmode]").forEach(b=>b.onclick=()=>{
+    dmode=b.dataset.dmode;calc.querySelectorAll("[data-dmode]").forEach(x=>x.setAttribute("aria-pressed",x===b));
+    $("#discPctWrap").hidden=dmode!=="pct";$("#discRpWrap").hidden=dmode!=="rp";renderDisc();
+  });
+  // selisih
+  function diffCalc(){const a=num("diffA"),b=num("diffB");return {a,b,d:a-b,pct:a?b/a*100:0}}
+  function renderDiff(){const r=diffCalc();$("#diffOut").textContent=(r.d<0?"−":"")+rupiah(Math.abs(r.d));$("#diffPct").textContent=fmtNum(r.pct)+"%"}
+
+  calc.addEventListener("input",e=>{
+    const el=e.target;
+    if(["discBase","discRp","diffA","diffB"].includes(el.id))el.value=fmt(el.value);
+    if(el.id==="discPct")el.value=el.value.replace(/[^\d,]/g,"").replace(/,(?=.*,)/g,"");
+    renderDisc();renderDiff();
+  });
+  // tab
+  calc.querySelectorAll(".calc-tabs button").forEach(b=>b.onclick=()=>{
+    calc.querySelectorAll(".calc-tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+    calc.querySelectorAll("[data-pane]").forEach(p=>p.hidden=p.dataset.pane!==b.dataset.tab);
+  });
+  buildActions();render();
+})();
 
 /* ---------- views ---------- */
 const VIEWS={vBuat:"pageBuat",vRekap:"pageRekap",vPanduan:"pagePanduan"};
