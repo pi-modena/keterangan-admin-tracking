@@ -220,6 +220,33 @@ td.k{font-family:var(--mono);font-size:.74rem;min-width:340px;color:var(--ink-2)
 .inline input{flex:1}
 .banner{padding:12px 14px;border-radius:8px;background:var(--warn-soft);color:var(--warn);font-size:.84rem;margin-bottom:16px;border:1px solid transparent}
 .pending{font-size:.78rem;color:var(--warn)}
+/* script call & chat */
+.sc-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.sc-head h2{font-size:.92rem;margin:0}
+.sc-body{padding:14px 18px 16px;display:flex;flex-direction:column;gap:10px}
+.sc-inputs{display:grid;grid-template-columns:96px 1fr;gap:8px}
+.sc-inputs input,.sc-inputs select{min-height:34px;padding:5px 9px;font-size:.82rem}
+.sc-inputs .full{grid-column:1/-1}
+.sc-steps{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.sc-step{border-top:1px solid var(--line)}
+.sc-step:first-child{border-top:0}
+.sc-step summary{list-style:none;display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;font-size:.82rem;font-weight:600;background:var(--panel-2)}
+.sc-step summary::-webkit-details-marker{display:none}
+.sc-step summary::before{content:"›";color:var(--muted);transition:transform .15s;display:inline-block;width:8px}
+.sc-step[open] summary::before{transform:rotate(90deg)}
+.sc-step summary .n{font-family:var(--mono);font-size:.72rem;color:var(--accent)}
+.sc-step summary .key{margin-left:auto;font-size:.68rem;font-weight:600;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:999px}
+.sc-text{padding:10px 12px 12px;font-size:.84rem;line-height:1.6;white-space:pre-wrap;color:var(--ink)}
+.sc-text mark{background:var(--warn-soft);color:var(--warn);border-radius:3px;padding:0 2px}
+.sc-tip{display:block;margin-top:6px;font-size:.74rem;color:var(--muted);white-space:pre-wrap}
+.sc-copy{border:1px solid var(--line-2);background:var(--panel);color:var(--ink-2);border-radius:5px;font-size:.7rem;font-weight:600;padding:2px 8px;cursor:pointer;margin-left:6px}
+.sc-step summary .sc-copy{margin-left:auto;flex:none}
+.sc-step summary .key+.sc-copy{margin-left:6px}
+.sc-copy:hover{border-color:var(--accent);color:var(--accent)}
+.sc-foot{display:flex;gap:8px;align-items:center}
+.sc-foot .btn{min-height:34px;padding:5px 12px;font-size:.8rem}
+.sc-foot small{color:var(--muted);font-size:.72rem}
+.std-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:.86rem;color:var(--ink-2)}
 /* kalkulator */
 .side{position:static}
 .calc{padding:0;overflow:hidden}
@@ -316,6 +343,21 @@ td.k{font-family:var(--mono);font-size:.74rem;min-width:340px;color:var(--ink-2)
             </div>
             <p class="status" id="status" role="status"></p>
             <p class="pending" id="pendingNote" hidden></p>
+          </div>
+        </div>
+        <div class="panel" id="scriptPanel">
+          <div class="sc-head">
+            <h2>Script Call &amp; Chat</h2>
+            <div class="seg-sm" role="group" aria-label="Mode script"><button type="button" data-scmode="call" aria-pressed="true">Call</button><button type="button" data-scmode="chat" aria-pressed="false">Chat</button></div>
+          </div>
+          <div class="sc-body">
+            <div class="sc-inputs">
+              <select id="scSapa" aria-label="Sapaan"><option>Bapak/Ibu</option><option>Bapak</option><option>Ibu</option></select>
+              <input type="text" id="scCust" placeholder="Nama pelanggan" aria-label="Nama pelanggan">
+              <input type="text" id="scModel" class="full" placeholder="Model unit, misalnya MO 3450" aria-label="Model unit">
+            </div>
+            <div class="sc-steps" id="scSteps"></div>
+            <div class="sc-foot" id="scFoot"><button type="button" class="btn secondary" id="scCopyAll">Salin semua untuk chat</button><small>Bagian yang diberi warna masih perlu diisi.</small></div>
           </div>
         </div>
         <div class="panel cardpad">
@@ -457,6 +499,20 @@ td.k{font-family:var(--mono);font-size:.74rem;min-width:340px;color:var(--ink-2)
           <div><b>Salin ulang</b><p>Keterangan yang sudah disalin hari ini ada di panel Keterangan saya hari ini. Klik untuk menyalin lagi tanpa tercatat dua kali.</p></div>
           <div><b>Rekap</b><p>Tab Rekap hanya bisa dibuka dengan kode rekap milik pemilik. Admin tidak perlu membukanya.</p></div>
         </div>
+      </div>
+      <div class="panel cardpad" style="grid-column:1/-1">
+        <h2>Standar komunikasi (parameter QA)</h2>
+        <ul class="std-list">
+          <li><b>Pembuka:</b> salam dalam 3 detik pertama, sebutkan waktu, nama admin, dan MODENA Indonesia, lalu pastikan berbicara dengan pelanggan yang benar.</li>
+          <li><b>Konfirmasi data:</b> pastikan teknisi sudah berkunjung dan status garansi sesuai.</li>
+          <li><b>Sopan dan formal:</b> minta izin sebelum meminta pelanggan menunggu, tidak menyela, dan tidak memakai jargon internal (RON, DSC/ASC, pending approval, nama cabang internal).</li>
+          <li><b>Empati:</b> sampaikan permohonan maaf atas ketidaknyamanan dan ulangi inti keluhan.</li>
+          <li><b>Rincian biaya:</b> sebutkan sparepart, jasa, transport, dan total, lalu tanyakan persetujuan, walaupun teknisi sudah menginformasikan.</li>
+          <li><b>Solusi alternatif:</b> tawarkan Trade In bila biaya tinggi atau sparepart tidak tersedia.</li>
+          <li><b>Waktu tindak lanjut:</b> maksimal 4 hari kerja untuk Jakarta 1, 2, 3, dan 3 hari kerja untuk luar Jakarta.</li>
+          <li><b>Penutup:</b> tanyakan apakah informasi sudah jelas dan ada hal lain, lalu tutup dengan salam.</li>
+          <li><b>Dokumentasi:</b> setiap follow up dicatat di Follow Up Action memakai halaman ini.</li>
+        </ul>
       </div>
     </div>
   </section>
@@ -876,6 +932,165 @@ $("#csvBtn").onclick=()=>{
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`rekap-keterangan-${dayKey(new Date())}.csv`;
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
 };
+
+/* ---------- script call & chat ---------- */
+(function(){
+  const box=$("#scSteps");if(!box)return;
+  let mode="call";
+  const L="\u0001",R="\u0002";             // penanda bagian yang belum terisi
+  const ph=t=>L+"["+t+"]"+R;
+  const P=(v,t)=>v?v:ph(t);
+  const salam=()=>{const h=new Date().getHours();return h<11?"pagi":h<15?"siang":h<18?"sore":"malam"};
+  const title=s=>s.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+  function addWorkdays(n){const d=new Date();while(n>0){d.setDate(d.getDate()+1);const w=d.getDay();if(w&&w<6)n--}return d}
+  const mval=k=>{const el=form.querySelector(`[data-money="${k}"]`);return el&&digits(el.value)!==""?Number(digits(el.value)):null};
+  const money=k=>{const v=mval(k);return v==null?ph("jumlah"):rupiah(v)};
+
+  function ctx(){
+    const nama=$("#selNama").value,cab=$("#selCabang").value;
+    const jkt=/JAKARTA [123]\b/i.test(cab);
+    const days=cab?(jkt?4:3):null;
+    const due=days?addWorkdays(days).toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"}):null;
+    const g=val("garansi");
+    return {
+      salam:salam(),admin:nama?title(nama.split(/\s+/)[0]):null,
+      cust:$("#scCust").value.trim(),model:$("#scModel").value.trim(),
+      garansi:g==="In Warranty"?"masih dalam masa garansi":g==="Out Warranty"?"sudah di luar masa garansi":null,
+      due,days,jkt,situasiIdx:(()=>{const s=form.querySelector('[name="situasi"]');return s?s.selectedIndex-1:-1})()
+    };
+  }
+
+  // isi inti per kategori
+  const CORE={
+    penawaran:c=>{
+      const t=["transport","jasa","sparepart","tambahan"].map(mval);const all=t.every(x=>x!=null);
+      const total=all?rupiah(t.reduce((a,b)=>a+b,0)):ph("total");
+      const rincian=`• Biaya Sparepart: ${money("sparepart")}\n• Jasa Perbaikan: ${money("jasa")}\n• Biaya Transport: ${money("transport")}`+(mval("tambahan")?`\n• Biaya Tambahan: ${money("tambahan")}`:"")+`\nTotal: ${total}`;
+      const extra=[
+        "",
+        `\n\nSaat ini sparepart masih dalam proses pemesanan dengan estimasi tersedia ${ph("tanggal/ETA")}. Apakah Bapak/Ibu bersedia menunggu?`,
+        `\n\nKarena sparepart yang sama belum tersedia, kami menawarkan penggunaan sparepart alternatif/substitusi yang sesuai dengan unit Bapak/Ibu.`,
+        `\n\nUntuk perbaikan ini, Bapak/Ibu mendapatkan potongan sebesar ${ph("jumlah/persen diskon")}.`,
+        `\n\nUntuk perbaikan ini, unit perlu dibawa ke service center kami agar dapat ditangani lebih maksimal.`
+      ][c.situasiIdx]||"";
+      return {
+        title:"Rincian biaya & persetujuan",
+        call:`Apakah sebelumnya teknisi kami sudah menginformasikan biaya perbaikannya, Bapak/Ibu?\n\nMenyambung hasil pengecekan teknisi kami, berikut rincian biaya perbaikannya:\n${rincian}${extra}\n\nApakah Bapak/Ibu menyetujui biaya tersebut agar kami dapat melanjutkan proses perbaikan?`,
+        chat:`Bapak/Ibu ${P(c.cust,"Nama Pelanggan")}, menyambung hasil pengecekan unit oleh teknisi kami, berikut estimasi biaya perbaikan:\n${rincian}${extra}\n\nMohon konfirmasi persetujuan Bapak/Ibu dengan membalas SETUJU atau TIDAK SETUJU.`,
+        tip:"Sudah atau belum diinformasikan teknisi, biaya tetap dikonfirmasi ulang dan dijelaskan per item."
+      };
+    },
+    penjadwalan:c=>({
+      title:"Penjadwalan kunjungan",
+      call:c.situasiIdx===1
+        ?`Sebelumnya kunjungan teknisi kami belum dapat terlaksana. Kami ingin menjadwalkan ulang kunjungan teknisi untuk unit ${P(c.model,"Model Unit")} Bapak/Ibu. Kapan waktu yang Bapak/Ibu bersedia untuk dikunjungi?`
+        :`Kami informasikan sparepart untuk unit ${P(c.model,"Model Unit")} Bapak/Ibu sudah tersedia. Kami ingin menjadwalkan kunjungan teknisi untuk pemasangan. Kapan waktu yang Bapak/Ibu bersedia untuk dikunjungi?`,
+      chat:c.situasiIdx===1
+        ?`Bapak/Ibu ${P(c.cust,"Nama Pelanggan")}, sebelumnya kunjungan teknisi kami belum dapat terlaksana. Kami ingin menjadwalkan ulang kunjungan teknisi untuk unit ${P(c.model,"Model Unit")}. Mohon informasikan hari dan jam yang Bapak/Ibu bersedia untuk dikunjungi.`
+        :`Bapak/Ibu ${P(c.cust,"Nama Pelanggan")}, kami informasikan sparepart untuk unit ${P(c.model,"Model Unit")} sudah tersedia. Mohon informasikan hari dan jam yang Bapak/Ibu bersedia untuk kunjungan teknisi kami.`,
+      tip:"Catat alasan jika pelanggan meminta reschedule atau tidak ada di tempat (TAO)."
+    }),
+    konfirmasi:c=>{
+      const v=[
+        [`Untuk melanjutkan proses klaim garansi, mohon bantuan Bapak/Ibu untuk mengirimkan foto kartu garansi, invoice pembelian, dan serial number unit melalui WhatsApp.`,
+         `Untuk melanjutkan proses klaim garansi, mohon bantuan Bapak/Ibu mengirimkan:\n• Foto kartu garansi\n• Invoice/nota pembelian\n• Foto serial number unit\nmelalui chat ini. Terima kasih.`],
+        [`Kami ingin mengonfirmasi kembali status perbaikan unit Bapak/Ibu, karena laporan service sebelumnya sudah melewati batas waktu. Apakah Bapak/Ibu masih berkenan untuk dilanjutkan perbaikannya?`,
+         `Kami ingin mengonfirmasi kembali status perbaikan unit ${P(c.model,"Model Unit")}, karena laporan service sebelumnya sudah melewati batas waktu. Apakah Bapak/Ibu masih berkenan untuk dilanjutkan perbaikannya?`],
+        [`Kami ingin mengonfirmasi kebutuhan sparepart untuk unit Bapak/Ibu agar dapat segera kami proses pemesanannya. Apakah perbaikan ingin dilanjutkan, Bapak/Ibu?`,
+         `Kami ingin mengonfirmasi kebutuhan sparepart untuk unit ${P(c.model,"Model Unit")} agar dapat segera kami proses pemesanannya. Mohon konfirmasi apakah perbaikan ingin dilanjutkan, Bapak/Ibu.`],
+        [`Kami ingin menginformasikan perkembangan terkait unit Bapak/Ibu: ${ph("hasil pengecekan / ETA sparepart / solusi alternatif")}.`,
+         `Kami ingin menginformasikan perkembangan terkait unit ${P(c.model,"Model Unit")}:\n${ph("hasil pengecekan / ETA sparepart / solusi alternatif")}`]
+      ][Math.max(0,c.situasiIdx)];
+      return {title:"Konfirmasi",call:v[0],chat:`Bapak/Ibu ${P(c.cust,"Nama Pelanggan")}, `+v[1].charAt(0).toLowerCase()+v[1].slice(1)};
+    },
+    ftu:c=>{
+      const unit=val("unit"),tambah=val("tambah");
+      const u=unit==="Sama Tipe"?"dengan tipe yang sama":unit==="Beda Tipe"?`dengan tipe ${ph("model unit pengganti")}`:ph("sama tipe / beda tipe");
+      const b=tambah==="Ada"?`dengan penambahan biaya sebesar ${ph("jumlah")}`:tambah==="Tidak Ada"?"tanpa penambahan biaya":ph("ada / tidak ada penambahan biaya");
+      return {title:"Penawaran solusi FTU",
+        call:`Berdasarkan hasil pengecekan teknisi, unit ${P(c.model,"Model Unit")} Bapak/Ibu tidak dapat diperbaiki. Sebagai solusi, kami menawarkan penggantian unit ${u}, ${b}. Apakah Bapak/Ibu bersedia dengan solusi tersebut?`,
+        chat:`Bapak/Ibu ${P(c.cust,"Nama Pelanggan")}, berdasarkan hasil pengecekan teknisi, unit ${P(c.model,"Model Unit")} tidak dapat diperbaiki. Sebagai solusi, kami menawarkan penggantian unit ${u}, ${b}.\nMohon konfirmasi persetujuan Bapak/Ibu dengan membalas SETUJU atau TIDAK SETUJU.`};
+    },
+    tradein:c=>({title:"Penawaran Trade In",
+      call:`Sebagai alternatif, Bapak/Ibu dapat memilih program Tukar Tambah (Trade In) ke unit MODENA baru. Nilai unit lama akan diperhitungkan sebagai potongan harga, sehingga Bapak/Ibu cukup membayar selisihnya. Apakah Bapak/Ibu berkenan kami kirimkan rinciannya?`,
+      chat:`Bapak/Ibu ${P(c.cust,"Nama Pelanggan")}, sebagai alternatif kami menawarkan program Tukar Tambah (Trade In):\n• Unit baru: ${ph("model unit baru")} – ${ph("harga")}\n• Potongan nilai unit lama/diskon: ${ph("jumlah")}\n• Yang perlu dibayarkan: ${ph("selisih")}\nApakah Bapak/Ibu tertarik? Jika ya, mohon konfirmasi alamat pengiriman unit.`,
+      tip:"Gunakan tab Selisih di kalkulator untuk menghitung yang perlu dibayarkan."}),
+    refund:c=>({title:"Penawaran Money Refund",
+      call:`Sebagai solusi atas kendala unit ${P(c.model,"Model Unit")}, kami menawarkan pengembalian dana sebesar ${money("refund")}. Apakah Bapak/Ibu bersedia dengan solusi tersebut?`,
+      chat:`Bapak/Ibu ${P(c.cust,"Nama Pelanggan")}, sebagai solusi atas kendala unit ${P(c.model,"Model Unit")}, kami menawarkan pengembalian dana sebesar ${money("refund")}.\nMohon konfirmasi persetujuan Bapak/Ibu dengan membalas SETUJU atau TIDAK SETUJU.`}),
+    penagihan:c=>{
+      const v=[
+        [`Kami ingin mengingatkan terkait pembayaran biaya service unit Bapak/Ibu sebesar ${ph("jumlah")}. Apakah sudah dapat dilakukan pembayarannya?`,
+         `kami ingin mengingatkan terkait pembayaran biaya service unit ${P(c.model,"Model Unit")} sebesar ${ph("jumlah")}. Mohon dapat mengirimkan bukti transfer melalui chat ini setelah pembayaran dilakukan.`],
+        [`Kami informasikan unit Bapak/Ibu masih berada di service center kami. Kapan Bapak/Ibu dapat mengambil unit tersebut?`,
+         `kami informasikan unit ${P(c.model,"Model Unit")} Bapak/Ibu masih berada di service center kami. Mohon informasikan kapan Bapak/Ibu dapat mengambil unit tersebut.`],
+        [`Kami ingin menindaklanjuti bukti potong pajak untuk transaksi service sebelumnya. Apakah sudah dapat dikirimkan?`,
+         `kami ingin menindaklanjuti bukti potong pajak untuk transaksi service sebelumnya. Mohon dapat dikirimkan melalui email/chat ini.`]
+      ][Math.max(0,c.situasiIdx)];
+      return {title:"Penagihan",call:v[0],chat:`Bapak/Ibu ${P(c.cust,"Nama Pelanggan")}, `+v[1]};
+    }
+  };
+
+  function steps(){
+    const c=ctx(),cust=P(c.cust,"Nama Pelanggan"),adm=P(c.admin,"Nama Admin"),model=P(c.model,"Model Unit");
+    const tgl=c.due?c.due:ph("tanggal");
+    const s=[];
+    s.push({title:"Pembuka",
+      call:`Selamat ${c.salam}, perkenalkan saya ${adm} dari MODENA Indonesia. Apakah saya sedang terhubung dengan Bapak/Ibu ${cust}?`,
+      chat:`Selamat ${c.salam} Bapak/Ibu ${cust}. Perkenalkan saya ${adm} dari MODENA Indonesia. Kami menghubungi Bapak/Ibu terkait layanan service unit MODENA ${model}. Sebelumnya kami sudah mencoba menghubungi melalui telepon, namun belum tersambung.`,
+      tip:"Call: ucapkan dalam 3 detik pertama. Sebutkan waktu, nama, dan perusahaan.\nJika yang menjawab orang lain: \"Mohon maaf, dengan Bapak/Ibu siapa? Apakah kami bisa melakukan konfirmasi terkait unit MODENA atas nama Bapak/Ibu "+cust+"?\""});
+    if(cat!=="penagihan")s.push({title:"Konfirmasi data",
+      call:`Izin konfirmasi, apakah benar teknisi kami sudah melakukan kunjungan perbaikan/instalasi unit MODENA ${model} ke tempat Bapak/Ibu?\n\nBerdasarkan data pada sistem kami, unit Bapak/Ibu tercatat ${P(c.garansi,"masih dalam masa garansi / sudah di luar masa garansi")}. Apakah informasi ini sudah sesuai?`,
+      chat:`Izin konfirmasi Bapak/Ibu, apakah benar teknisi kami sudah melakukan kunjungan perbaikan/instalasi unit MODENA ${model} ke tempat Bapak/Ibu? Berdasarkan data kami, unit tercatat ${P(c.garansi,"masih dalam masa garansi / sudah di luar masa garansi")}.`});
+    if(cat!=="penagihan")s.push({title:"Empati",
+      call:`Sebelumnya kami mohon maaf atas ketidaknyamanan yang Bapak/Ibu alami terkait unit ${model}. Kami memahami kendala ini cukup mengganggu aktivitas Bapak/Ibu.`,
+      chat:`Sebelumnya kami mohon maaf atas ketidaknyamanan yang Bapak/Ibu alami terkait unit ${model}. Kami bantu tindak lanjuti agar kendalanya dapat segera teratasi.`,
+      tip:"Dengarkan keluhan sampai selesai, lalu ulangi intinya: \"Baik, jadi kendalanya …, benar begitu Bapak/Ibu?\""});
+    const core=CORE[cat](c);core.key=true;s.push(core);
+    s.push({title:"Waktu tindak lanjut",
+      call:`Kami akan menginformasikan perkembangan selanjutnya kepada Bapak/Ibu paling lambat ${tgl}.`,
+      chat:`Perkembangan selanjutnya akan kami informasikan kepada Bapak/Ibu paling lambat ${tgl}. Terima kasih atas kesabarannya.`,
+      tip:c.days?`Dihitung otomatis: ${c.days} hari kerja (${c.jkt?"area Jakarta 1/2/3":"luar Jakarta"}) dari hari ini.`:"Pilih cabang di atas agar tanggal dihitung otomatis (Jakarta 1/2/3: 4 hari kerja, luar Jakarta: 3 hari kerja)."});
+    s.push({title:"Penawaran bantuan",
+      call:`Apakah informasi yang kami sampaikan sudah jelas, Bapak/Ibu? Apakah ada hal lain yang bisa kami bantu?`,
+      chat:`Apakah informasi di atas sudah jelas, Bapak/Ibu ${cust}? Jika ada hal lain yang ingin ditanyakan, silakan disampaikan, kami siap membantu.`});
+    s.push({title:"Penutup",
+      call:`Terima kasih atas waktu dan konfirmasinya, Bapak/Ibu ${cust}. Selamat ${c.salam} dan selamat beraktivitas kembali.`,
+      chat:`Terima kasih atas waktu dan konfirmasinya, Bapak/Ibu ${cust}. Selamat ${c.salam} dan selamat beraktivitas kembali.`});
+    const sapa=$("#scSapa").value;
+    s.forEach(x=>{["call","chat","tip"].forEach(k=>{if(x[k]&&sapa!=="Bapak/Ibu")x[k]=x[k].replace(/Bapak\/Ibu/g,sapa)})});
+    return s;
+  }
+  const toHtml=t=>esc(t).replace(/\u0001/g,"<mark>").replace(/\u0002/g,"</mark>");
+  const plain=t=>t.replace(/[\u0001\u0002]/g,"");
+  let openState={};
+  function render(){
+    const s=steps();
+    box.querySelectorAll("details").forEach(d=>openState[d.dataset.t]=d.open);
+    box.innerHTML="";
+    s.forEach((x,i)=>{
+      const d=document.createElement("details");d.className="sc-step";d.dataset.t=x.title;
+      d.open=openState[x.title]!==undefined?openState[x.title]:!!x.key;
+      const txt=x[mode];
+      d.innerHTML=`<summary><span class="n">${i+1}</span>${esc(x.title)}${x.key?'<span class="key">Inti</span>':""}<button type="button" class="sc-copy">Salin</button></summary><div class="sc-text">${toHtml(txt)}${x.tip?`<span class="sc-tip">${toHtml(x.tip)}</span>`:""}</div>`;
+      d.querySelector(".sc-copy").onclick=e=>{e.preventDefault();e.stopPropagation();copy(plain(txt),e.target)};
+      box.appendChild(d);
+    });
+    $("#scFoot").hidden=mode!=="chat";
+  }
+  function copy(t,btn){
+    const done=()=>{const o=btn.textContent;btn.textContent="Tersalin";setTimeout(()=>btn.textContent=o,1200)};
+    try{navigator.clipboard.writeText(t).then(done,()=>{})}catch(e){}
+  }
+  $("#scCopyAll").onclick=e=>copy(steps().map(x=>plain(x.chat)).join("\n\n"),e.target);
+  document.querySelectorAll("[data-scmode]").forEach(b=>b.onclick=()=>{
+    mode=b.dataset.scmode;document.querySelectorAll("[data-scmode]").forEach(x=>x.setAttribute("aria-pressed",x===b));render();
+  });
+  ["scSapa","scCust","scModel","selNama","selCabang"].forEach(id=>{$("#"+id).addEventListener("input",render);$("#"+id).addEventListener("change",render)});
+  form.addEventListener("input",render);form.addEventListener("change",render);
+  const _rf=renderForm;renderForm=function(){openState={};_rf();render()};
+  render();
+})();
 
 /* ---------- kalkulator ---------- */
 (function(){
